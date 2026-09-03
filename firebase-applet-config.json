@@ -1,0 +1,12 @@
+{
+  "projectId": "bgp-technology-attendance",
+  "appId": "1:806045042675:web:06ec8ff482f9dab2ab7486",
+  "apiKey": "AIzaSyCKm1Am3uH-7HsbnQfkBgtLcyeo59KVtOU",
+  "authDomain": "bgp-technology-attendance.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "bgp-technology-attendance.firebasestorage.app",
+  "messagingSenderId": "806045042675",
+  "measurementId": "G-TBR5WFN8GQ",
+  "oAuthClientId": "",
+  "recaptchaSiteKey": ""
+}

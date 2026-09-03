@@ -1,0 +1,143 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user (Admin or Police Officer / Staff)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "fullName": { "type": "string" },
+        "rank": { "type": "string" },
+        "department": { "type": "string" },
+        "position": { "type": "string" },
+        "phone": { "type": "string" },
+        "badgeNumber": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "officer"] },
+        "createdAt": { "type": "string" },
+        "efficiencyScore": { "type": "number" },
+        "rankTier": { "type": "string" }
+      },
+      "required": ["username", "fullName", "rank", "role"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Clock-in and clock-out time attendance records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "officerName": { "type": "string" },
+        "rank": { "type": "string" },
+        "department": { "type": "string" },
+        "date": { "type": "string" },
+        "ethiopianDate": { "type": "string" },
+        "period": { "type": "string" },
+        "slotName": { "type": "string" },
+        "timeIn": { "type": "string" },
+        "ethiopianTimeIn": { "type": "string" },
+        "status": { "type": "string", "enum": ["on_time", "late", "absent", "permission", "field"] },
+        "location": { "type": "object" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["userId", "date", "slotName", "status"]
+    },
+    "NightDutyShift": {
+      "title": "NightDutyShift",
+      "description": "Night duty assigned shift and log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "officerName": { "type": "string" },
+        "shiftDate": { "type": "string" },
+        "entryTimeWindow": { "type": "string" },
+        "exitTimeWindow": { "type": "string" },
+        "checkedInTime": { "type": "string" },
+        "checkedOutTime": { "type": "string" },
+        "status": { "type": "string" },
+        "incidentReport": { "type": "string" },
+        "patrolNotes": { "type": "string" },
+        "handoverNotes": { "type": "string" }
+      },
+      "required": ["userId", "shiftDate"]
+    },
+    "FieldDuty": {
+      "title": "FieldDuty",
+      "description": "External field duty registration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "officerName": { "type": "string" },
+        "destination": { "type": "string" },
+        "reason": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "approvedBy": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["userId", "destination", "reason", "startDate"]
+    },
+    "LeaveRecord": {
+      "title": "LeaveRecord",
+      "description": "Official leave record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "officerName": { "type": "string" },
+        "leaveType": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "reason": { "type": "string" },
+        "approvedBy": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["userId", "leaveType", "startDate", "endDate"]
+    },
+    "CommissionSetting": {
+      "title": "CommissionSetting",
+      "description": "Commission settings including logo, geofence, and contact",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "commissionName": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "hqLatitude": { "type": "number" },
+        "hqLongitude": { "type": "number" },
+        "allowedRadiusMeters": { "type": "number" },
+        "enforceGeofence": { "type": "boolean" },
+        "enforceDesktopOnly": { "type": "boolean" }
+      },
+      "required": ["commissionName"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Staff and officer user profiles"
+    },
+    "/attendance/{recordId}": {
+      "schema": { "$ref": "#/entities/AttendanceRecord" },
+      "description": "Clock in and out records"
+    },
+    "/night_duties/{dutyId}": {
+      "schema": { "$ref": "#/entities/NightDutyShift" },
+      "description": "Night shift duty roster and logs"
+    },
+    "/field_duties/{fieldId}": {
+      "schema": { "$ref": "#/entities/FieldDuty" },
+      "description": "Out-of-office and field assignments"
+    },
+    "/leaves/{leaveId}": {
+      "schema": { "$ref": "#/entities/LeaveRecord" },
+      "description": "Leaves and permissions"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/CommissionSetting" },
+      "description": "System settings and commission logo"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Noto Sans Ethiopic', 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, footer, #login-modal-overlay, #desktop-guard-screen, .print\:hidden {
+    display: none !important;
+  }
+  #printable-certificate, #consolidated-report-modal, #individual-report-modal {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

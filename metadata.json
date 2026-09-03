@@ -1,0 +1,10 @@
+{
+  "name": "የቤጉ ፖሊስ ቴክኖሎጂ ማስፋፊያ የሰዓት ቁጥጥር ሲሰተም",
+  "description": "የቤንሻንጉል ጉሙዝ ክልል ፖሊስ ኮሚሽን የሰራተኞች እና አዳር ተረኞች የስራ መግቢያና መውጫ የሰዓት ቁጥጥር፣ ፈቃድ፣ ፊልድ፣ ሪፖርት እና ሰርትፊኬት ማመንጫ ሲስተም",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
