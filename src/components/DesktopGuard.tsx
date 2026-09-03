@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, Smartphone, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Monitor, Smartphone, Move, X } from 'lucide-react';
 
 interface DesktopGuardProps {
   children: React.ReactNode;
-  enforceDesktop: boolean;
+  enforceDesktop?: boolean;
 }
 
-export const DesktopGuard: React.FC<DesktopGuardProps> = ({ children, enforceDesktop }) => {
-  const [isMobileScreen, setIsMobileScreen] = useState(false);
-  const [bypassScreenCheck, setBypassScreenCheck] = useState(false);
+export const DesktopGuard: React.FC<DesktopGuardProps> = ({ children }) => {
+  const [isNarrowScreen, setIsNarrowScreen] = useState(false);
+  const [dismissBanner, setDismissBanner] = useState(false);
 
   useEffect(() => {
     const checkScreen = () => {
-      // Check if width is below typical desktop workstation (1024px or 800px)
-      const isMobile = window.innerWidth < 900;
-      setIsMobileScreen(isMobile);
+      setIsNarrowScreen(window.innerWidth < 850);
     };
 
     checkScreen();
@@ -22,47 +20,35 @@ export const DesktopGuard: React.FC<DesktopGuardProps> = ({ children, enforceDes
     return () => window.removeEventListener('resize', checkScreen);
   }, []);
 
-  if (enforceDesktop && isMobileScreen && !bypassScreenCheck) {
-    return (
-      <div id="desktop-guard-screen" className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-slate-800 border-2 border-amber-500/50 rounded-2xl p-8 shadow-2xl text-center">
-          <div className="w-20 h-20 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-amber-500/40">
-            <Monitor className="w-10 h-10 text-amber-400" />
+  return (
+    <div className="w-full min-w-full overflow-x-auto overflow-y-auto">
+      {/* Helpful scroll & pan hint for narrow screens/mobile instead of blocking */}
+      {isNarrowScreen && !dismissBanner && (
+        <aside
+          aria-label="Screen orientation advisory"
+          className="bg-amber-950/90 text-amber-200 border-b border-amber-800/80 px-3 py-1.5 text-xs flex items-center justify-between sticky top-0 z-50 shadow-md backdrop-blur-md print:hidden"
+        >
+          <div className="flex items-center gap-2">
+            <Move className="w-3.5 h-3.5 text-amber-400 shrink-0 animate-pulse" />
+            <span>
+              የስክሪን እይታ፡ ሙሉውን ገበታ ለማየት ወደ ላይ፣ ወደ ታች እና ወደ ጎን (ግራ/ቀኝ) ያሸብልሉ
+            </span>
           </div>
-
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-300 text-xs font-semibold mb-4 border border-red-500/30">
-            <Smartphone className="w-3.5 h-3.5" /> የስልክ ተጠቃሚ ገደብ (Desktop Only)
-          </div>
-
-          <h2 className="text-xl font-bold text-white mb-3">
-            ይህ ሲስተም በኮምፒውተር ላይ ብቻ እንዲሰራ የተገደበ ነው!
-          </h2>
-
-          <p className="text-slate-300 text-sm leading-relaxed mb-6">
-            የቤንሻንጉል ጉሙዝ ክልል ፖሊስ ኮሚሽን ቴክኖሎጂ ማስፋፊያ የሰዓት ቁጥጥር ሲስተም የደህንነትና ትክክለኛ የስራ ቦታ ቁጥጥር ለማድረግ በኮምፒውተር (Desktop/Laptop Workstation) ላይ ብቻ እንዲሰራ ተደርጓል።
-          </p>
-
-          <div className="bg-slate-900/80 rounded-xl p-4 mb-6 border border-slate-700 text-left text-xs text-slate-400 space-y-2">
-            <div className="flex items-center gap-2 text-slate-300 font-medium">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>የተጠቃሚ መመሪያ፡</span>
-            </div>
-            <p>1. እባክዎን የኮሚሽኑን ቢሮ ኮምፒውተር ይጠቀሙ።</p>
-            <p>2. ስክሪንዎን በኮምፒውተር ወይም ላፕቶፕ ላይ ሙሉ በሙሉ ዘርግተው ይክፈቱ።</p>
-          </div>
-
           <button
-            id="btn-bypass-desktop-check"
-            onClick={() => setBypassScreenCheck(true)}
-            className="w-full py-2.5 px-4 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-lg transition-colors border border-slate-600 flex items-center justify-center gap-2"
+            onClick={() => setDismissBanner(true)}
+            className="p-1 hover:bg-amber-900/60 rounded text-amber-300 transition"
+            title="ይህንን ማሳሰቢያ ዝጋ"
           >
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            ለሙከራና እይታ በዴስክቶፕ እይታ ቀጥል (Bypass for Preview)
+            <X className="w-3.5 h-3.5" />
           </button>
-        </div>
-      </div>
-    );
-  }
+        </aside>
+      )}
 
-  return <>{children}</>;
+      {/* Main app content with fully enabled horizontal and vertical scrolling */}
+      <div className="min-w-full sm:min-w-[700px] md:min-w-[900px] lg:min-w-full">
+        {children}
+      </div>
+    </div>
+  );
 };
+

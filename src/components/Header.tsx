@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Clock, MapPin, LogOut, User as UserIcon, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
+import { Shield, Clock, MapPin, LogOut, User as UserIcon, Calendar, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import { User, CommissionSettings } from '../types';
 import { toEthiopianDate, toEthiopianTime, getSlotStatus } from '../lib/ethiopianCalendar';
 
@@ -7,6 +7,7 @@ interface HeaderProps {
   currentUser: User | null;
   settings: CommissionSettings;
   onLogout: () => void;
+  onBack?: () => void;
   geofenceStatus: {
     withinFence: boolean;
     distanceMeters: number;
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentUser,
   settings,
   onLogout,
+  onBack,
   geofenceStatus
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -33,37 +35,61 @@ export const Header: React.FC<HeaderProps> = ({
   const ethTime = toEthiopianTime(currentTime);
   const slotStatus = getSlotStatus(currentTime);
 
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else if (currentUser) {
+      onLogout();
+    } else if (window.history.length > 1) {
+      window.history.back();
+    }
+  };
+
   return (
     <header id="main-header" className="bg-slate-900 text-white border-b border-slate-800 shadow-lg sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div className="flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
           
-          {/* Logo & Commission Branding */}
-          <div className="flex items-center gap-3.5">
-            <div className="relative group">
+          {/* Logo, Back Button & Commission Branding */}
+          <div className="flex items-center gap-2.5 sm:gap-3.5">
+            {/* Prominent Back / Return Button */}
+            {currentUser && (
+              <button
+                id="btn-header-back"
+                onClick={handleBack}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 active:bg-amber-500 active:text-slate-950 text-amber-300 font-bold text-xs rounded-xl border border-slate-700 shadow-sm transition cursor-pointer"
+                title="ወደ ኋላ ተመለስ (Back)"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">ተመለስ</span>
+              </button>
+            )}
+
+            <div className="relative group shrink-0">
               <img
                 src={settings.logoUrl}
                 alt="የፖሊስ ኮሚሽን አርማ"
-                className="w-13 h-13 object-contain rounded-xl p-1 bg-slate-800/80 border border-slate-700 shadow-md"
+                className="w-11 h-11 sm:w-13 sm:h-13 object-contain rounded-xl p-1 bg-slate-800/80 border border-slate-700 shadow-md"
                 referrerPolicy="no-referrer"
               />
               <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-900 rounded-full" title="ሲስተሙ ንቁ ነው" />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded uppercase tracking-wider">
                   ቤ/ጉ/ክ/ፖ/ኮ
                 </span>
-                <span className="text-xs text-slate-400 font-medium">
+                <span className="text-[11px] sm:text-xs text-slate-400 font-medium truncate">
                   {settings.departmentName}
                 </span>
               </div>
-              <h1 className="text-lg font-bold text-white tracking-tight leading-tight">
+              <h1 className="text-sm sm:text-lg font-bold text-white tracking-tight leading-tight truncate">
                 {settings.commissionName} የሰዓት ቁጥጥር ሲስተም
               </h1>
             </div>
           </div>
+
 
           {/* Center: Live Ethiopian Date, Time & Active Slot Window */}
           <div className="hidden lg:flex items-center gap-4 bg-slate-800/70 py-1.5 px-4 rounded-xl border border-slate-700/60 shadow-inner">

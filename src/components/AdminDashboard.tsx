@@ -24,7 +24,8 @@ import {
   Upload,
   BarChart3,
   Check,
-  FileCheck
+  FileCheck,
+  ArrowLeft
 } from 'lucide-react';
 import {
   User,
@@ -372,7 +373,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
 
         {/* Tab Navigation buttons */}
-        <div className="flex items-center gap-2 pt-4 overflow-x-auto text-xs">
+        <div className="flex items-center gap-2 pt-4 overflow-x-auto text-xs pb-1">
+          {activeTab !== 'live_board' && (
+            <button
+              id="btn-admin-tab-back"
+              onClick={() => setActiveTab('live_board')}
+              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl font-bold bg-slate-800 text-amber-300 hover:bg-slate-700 hover:text-white border border-amber-500/40 cursor-pointer shadow-sm transition shrink-0"
+              title="ወደ ዋና ሰሌዳ ተመለስ"
+            >
+              <ArrowLeft className="w-4 h-4 text-amber-400" />
+              <span>ተመለስ</span>
+            </button>
+          )}
+
           {[
             { id: 'live_board', label: 'የቀጥታ ሰሌዳ (Live Board)', icon: Clock },
             { id: 'users', label: 'የሰራተኞች ማህደር (Staff Directory)', icon: Users },

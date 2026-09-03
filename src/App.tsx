@@ -21,6 +21,7 @@ import { OfficerDashboard } from './components/OfficerDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { CertificateModal } from './components/CertificateModal';
 import { ConsolidatedReportModal, IndividualReportModal } from './components/PrintReports';
+import { NavigationScrollControls } from './components/NavigationScrollControls';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -152,6 +153,29 @@ export default function App() {
     setGeofenceStatus(geo);
   };
 
+  // Smart Back navigation handler
+  const handleSmartBack = () => {
+    if (certificateUser) {
+      setCertificateUser(null);
+      return;
+    }
+    if (showConsolidatedReport) {
+      setShowConsolidatedReport(false);
+      return;
+    }
+    if (individualReportUser) {
+      setIndividualReportUser(null);
+      return;
+    }
+    if (currentUser) {
+      setCurrentUser(null);
+      return;
+    }
+    if (window.history.length > 1) {
+      window.history.back();
+    }
+  };
+
   return (
     <DesktopGuard enforceDesktop={settings.enforceDesktopOnly}>
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950">
@@ -161,6 +185,7 @@ export default function App() {
           currentUser={currentUser}
           settings={settings}
           onLogout={() => setCurrentUser(null)}
+          onBack={handleSmartBack}
           geofenceStatus={geofenceStatus}
         />
 
@@ -263,6 +288,9 @@ export default function App() {
             </div>
           </div>
         </footer>
+
+        {/* Floating Back and Scroll Controls (ተመለስ / ወደ ላይ / ወደ ታች / ወደ ጎን) */}
+        <NavigationScrollControls onBack={handleSmartBack} canGoBack={true} />
 
       </div>
     </DesktopGuard>
