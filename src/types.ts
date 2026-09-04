@@ -28,7 +28,9 @@ export interface TimeSlot {
   startMinute: number; // 30
   endHour: number; // 8
   endMinute: number; // 45
-  type: 'check_in' | 'tea_break' | 'lunch_return' | 'afternoon_break' | 'check_out';
+  type: 'check_in' | 'tea_break' | 'lunch_return' | 'afternoon_break' | 'check_out' | 'duty_entry' | 'duty_night_check' | 'duty_exit';
+  isDutySlot?: boolean;
+  dutyShiftType?: 'regular' | '24hr_duty';
 }
 
 export interface AttendanceRecord {
@@ -62,16 +64,19 @@ export interface NightDutyShift {
   officerName: string;
   rank: string;
   department: string;
-  shiftDate: string; // Date of night duty
+  shiftDate: string; // Date of duty
   ethiopianDate: string;
-  entryTimeWindow: string; // e.g. "12:00 - 12:30 ምሽት"
-  exitTimeWindow: string; // e.g. "12:00 - 12:30 ጠዋት"
+  shiftType?: '24hr_duty' | 'night_patrol';
+  entryTimeWindow: string; // "ጠዋት 2:00 - 2:30" (ቀጣይ ውሎና አዳር ተረኛ መግቢያ)
+  nightCheckTimeWindow?: string; // "ሌሊት 9:00 - 9:30" (የሌሊት ዙር/ቁጥጥር)
+  exitTimeWindow: string; // "ጠዋት 2:00" (አድሮ መውጫ)
   checkedInTime?: string;
+  nightCheckedTime?: string; // ሌሊት 9:00 - 9:30 የተመዘገበበት
   checkedOutTime?: string;
   status: 'scheduled' | 'active' | 'completed' | 'missed';
-  incidentReport?: string; // የእለት ክስተቶችና ሪፖርት
+  incidentReport?: string; // የእለት ክስተቶችና ሪፖርት (መውጫ ከመመዝገቡ በፊት መፃፍ ግዴታ ነው)
   patrolNotes?: string; // የጥበቃና ዙር ማስታወሻ
-  handoverNotes?: string; // የስራ ርክክብ
+  handoverNotes?: string; // የስራ ርክክብ ማስታወሻ
   createdAt: string;
 }
 

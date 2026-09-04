@@ -22,6 +22,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { CertificateModal } from './components/CertificateModal';
 import { ConsolidatedReportModal, IndividualReportModal } from './components/PrintReports';
 import { NavigationScrollControls } from './components/NavigationScrollControls';
+import { SystemDocumentationModal } from './components/SystemDocumentationModal';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -37,6 +38,7 @@ export default function App() {
   const [certificateUser, setCertificateUser] = useState<User | null>(null);
   const [showConsolidatedReport, setShowConsolidatedReport] = useState(false);
   const [individualReportUser, setIndividualReportUser] = useState<User | null>(null);
+  const [showDocumentationModal, setShowDocumentationModal] = useState(false);
 
   // Geofence status
   const [geofenceStatus, setGeofenceStatus] = useState<GeofenceResult>({
@@ -187,6 +189,7 @@ export default function App() {
           settings={settings}
           onLogout={() => setCurrentUser(null)}
           onBack={handleSmartBack}
+          onOpenDocumentation={() => setShowDocumentationModal(true)}
           geofenceStatus={geofenceStatus}
         />
 
@@ -277,6 +280,13 @@ export default function App() {
             onViewCertificate={(u) => setCertificateUser(u)}
           />
         )}
+
+        {/* Comprehensive System Documentation & User Manual Modal */}
+        <SystemDocumentationModal
+          isOpen={showDocumentationModal}
+          onClose={() => setShowDocumentationModal(false)}
+          settings={settings}
+        />
 
         {/* Footer */}
         <footer className="py-4 border-t border-slate-900 text-center text-xs text-slate-500 print:hidden">

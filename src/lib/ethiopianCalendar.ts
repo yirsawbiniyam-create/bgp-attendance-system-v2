@@ -41,25 +41,27 @@ export const ETHIOPIAN_DAYS = [
 export const OFFICIAL_SLOTS: TimeSlot[] = [
   {
     id: 'morning_entry',
-    name: 'ጠዋት መግቢያ (ስራ መጀመሪያ)',
-    description: 'ጠዋት ወደ መስሪያ ቤት መግቢያ የሰዓት መቆጣጠሪያ',
+    name: 'ጠዋት መግቢያ (መደበኛ ስራ)',
+    description: 'የመደበኛ ሰራተኞች ወደ መስሪያ ቤት መግቢያ የሰዓት መቆጣጠሪያ',
     ethiopianTime: 'ጠዋት 2:30 - 2:45',
     startHour: 8,
     startMinute: 30,
     endHour: 8,
     endMinute: 45,
-    type: 'check_in'
+    type: 'check_in',
+    dutyShiftType: 'regular'
   },
   {
     id: 'morning_tea',
-    name: 'ጠዋት ሻይ እረፍት (መውጫ/መመለሻ)',
-    description: 'የጠዋት የሻይ እረፍት መቆጣጠሪያ ሰዓት',
-    ethiopianTime: 'ጠዋት 4:05 - 6:25',
-    startHour: 10,
-    startMinute: 5,
-    endHour: 12,
-    endMinute: 25,
-    type: 'tea_break'
+    name: 'ጠዋት የሻይ እረፍት',
+    description: 'የጠዋት የሻይ እረፍት መቆጣጠሪያ ሰዓት (3:55 - 4:35)',
+    ethiopianTime: 'ጠዋት 3:55 - 4:35',
+    startHour: 9,
+    startMinute: 55,
+    endHour: 10,
+    endMinute: 35,
+    type: 'tea_break',
+    dutyShiftType: 'regular'
   },
   {
     id: 'lunch_return',
@@ -70,29 +72,71 @@ export const OFFICIAL_SLOTS: TimeSlot[] = [
     startMinute: 35,
     endHour: 13,
     endMinute: 45,
-    type: 'lunch_return'
+    type: 'lunch_return',
+    dutyShiftType: 'regular'
   },
   {
     id: 'afternoon_tea',
-    name: 'ከሰዓት ሻይ እረፍት',
+    name: 'ከሰዓት የሻይ እረፍት',
     description: 'የከሰዓት የሻይ እረፍት መቆጣጠሪያ',
     ethiopianTime: 'ከሰዓት 9:05 - 9:35',
     startHour: 15,
     startMinute: 5,
     endHour: 15,
     endMinute: 35,
-    type: 'afternoon_break'
+    type: 'afternoon_break',
+    dutyShiftType: 'regular'
   },
   {
     id: 'work_exit',
-    name: 'ከስራ መውጫ (ስራ ማብቂያ)',
+    name: 'ከስራ መውጫ (መደበኛ ስራ ማብቂያ)',
     description: 'የቀኑ መደበኛ ስራ ማብቂያ የሰዓት መቆጣጠሪያ',
     ethiopianTime: 'ከምሽቱ 11:20 - 11:30',
     startHour: 17,
     startMinute: 20,
     endHour: 17,
     endMinute: 30,
-    type: 'check_out'
+    type: 'check_out',
+    dutyShiftType: 'regular'
+  },
+  {
+    id: 'duty_entry',
+    name: 'ቀጣይ ውሎና አዳር ተረኛ መግቢያ',
+    description: 'የቀጣዩ ቀን ውሎና አዳር ተረኛ የስራ መግቢያ',
+    ethiopianTime: 'ጠዋት 2:00 - 2:30',
+    startHour: 8,
+    startMinute: 0,
+    endHour: 8,
+    endMinute: 30,
+    type: 'duty_entry',
+    isDutySlot: true,
+    dutyShiftType: '24hr_duty'
+  },
+  {
+    id: 'duty_night_check',
+    name: 'የውሎና አዳር ሌሊት ቁጥጥር (ዙር)',
+    description: 'የውሎና አዳር ተረኛ የሌሊት ሰዓት ቁጥጥር እና የፓትሮል ፍተሻ',
+    ethiopianTime: 'ሌሊት 9:00 - 9:30',
+    startHour: 3,
+    startMinute: 0,
+    endHour: 3,
+    endMinute: 30,
+    type: 'duty_night_check',
+    isDutySlot: true,
+    dutyShiftType: '24hr_duty'
+  },
+  {
+    id: 'duty_exit',
+    name: 'የውሎና አዳር አድሮ መውጫ (ጠዋት 2:00)',
+    description: 'ውሎና አዳር ያደረ ተረኛ ሪፖርት ጽፎ የሚወጣበት ሰዓት',
+    ethiopianTime: 'ጠዋት 2:00',
+    startHour: 7,
+    startMinute: 45,
+    endHour: 8,
+    endMinute: 15,
+    type: 'duty_exit',
+    isDutySlot: true,
+    dutyShiftType: '24hr_duty'
   }
 ];
 
@@ -195,7 +239,10 @@ export function toEthiopianTime(date: Date = new Date()): {
 /**
  * Determines current active slot or next upcoming slot
  */
-export function getSlotStatus(now: Date = new Date()): {
+export function getSlotStatus(
+  now: Date = new Date(),
+  filterShiftType?: 'regular' | '24hr_duty' | 'all'
+): {
   activeSlot: TimeSlot | null;
   nextSlot: TimeSlot | null;
   timeRemainingSeconds: number;
@@ -207,7 +254,11 @@ export function getSlotStatus(now: Date = new Date()): {
   let nextSlot: TimeSlot | null = null;
   let minMinutesUntilNext = Infinity;
 
-  for (const slot of OFFICIAL_SLOTS) {
+  const candidateSlots = filterShiftType && filterShiftType !== 'all'
+    ? OFFICIAL_SLOTS.filter((s) => s.dutyShiftType === filterShiftType)
+    : OFFICIAL_SLOTS;
+
+  for (const slot of candidateSlots) {
     const startMinutes = slot.startHour * 60 + slot.startMinute;
     const endMinutes = slot.endHour * 60 + slot.endMinute;
 
@@ -223,9 +274,9 @@ export function getSlotStatus(now: Date = new Date()): {
     }
   }
 
-  if (!nextSlot && !activeSlot && OFFICIAL_SLOTS.length > 0) {
+  if (!nextSlot && !activeSlot && candidateSlots.length > 0) {
     // Wrap to first slot tomorrow
-    nextSlot = OFFICIAL_SLOTS[0];
+    nextSlot = candidateSlots[0];
   }
 
   let timeRemainingSeconds = 0;

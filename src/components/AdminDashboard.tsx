@@ -99,13 +99,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     additionalNotes: ''
   });
 
-  // Night Duty Form State
+  // Night Duty / 24-hr Duty Form State
   const [showNightDutyModal, setShowNightDutyModal] = useState(false);
   const [nightDutyFormData, setNightDutyFormData] = useState<Partial<NightDutyShift>>({
     userId: users.find((u) => u.role === 'officer')?.id || '',
     shiftDate: new Date().toISOString().split('T')[0],
-    entryTimeWindow: 'ምሽት 12:00 - 12:30',
-    exitTimeWindow: 'ጠዋት 12:00 - 12:30',
+    shiftType: '24hr_duty',
+    entryTimeWindow: 'ጠዋት 2:00 - 2:30',
+    nightCheckTimeWindow: 'ሌሊት 9:00 - 9:30',
+    exitTimeWindow: 'ጠዋት 2:00',
     incidentReport: '',
     patrolNotes: '',
     handoverNotes: ''
@@ -217,8 +219,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       department: officer.department,
       shiftDate: nightDutyFormData.shiftDate || todayStr,
       ethiopianDate: ethToday.formatted,
-      entryTimeWindow: nightDutyFormData.entryTimeWindow || 'ምሽት 12:00 - 12:30',
-      exitTimeWindow: nightDutyFormData.exitTimeWindow || 'ጠዋት 12:00 - 12:30',
+      shiftType: '24hr_duty',
+      entryTimeWindow: nightDutyFormData.entryTimeWindow || 'ጠዋት 2:00 - 2:30',
+      nightCheckTimeWindow: nightDutyFormData.nightCheckTimeWindow || 'ሌሊት 9:00 - 9:30',
+      exitTimeWindow: nightDutyFormData.exitTimeWindow || 'ጠዋት 2:00',
       status: 'scheduled',
       incidentReport: '',
       createdAt: new Date().toISOString()
@@ -226,7 +230,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     await onSaveNightDuty(duty);
     setShowNightDutyModal(false);
-    showToast('success', `ለ ${officer.fullName} የአዳር ተረኝነት ፕሮግራም ተመዝግቧል!`);
+    showToast('success', `ለ ${officer.fullName} የውሎና አዳር ተረኝነት ፕሮግራም ተመዝግቧል!`);
   };
 
   // Handle Save Leave Submit
@@ -754,12 +758,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <span className="font-semibold">{duty.shiftDate}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">የመግቢያ ሰዓት ገደብ፡</span>
-                      <span className="text-amber-300 font-bold">{duty.entryTimeWindow}</span>
+                      <span className="text-slate-400">የመግቢያ ሰዓት፡</span>
+                      <span className="text-amber-300 font-bold">{duty.entryTimeWindow || 'ጠዋት 2:00 - 2:30'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">የመውጫ ሰዓት ገደብ፡</span>
-                      <span className="text-amber-300 font-bold">{duty.exitTimeWindow}</span>
+                      <span className="text-slate-400">የሌሊት ቁጥጥር፡</span>
+                      <span className="text-purple-300 font-bold">{duty.nightCheckTimeWindow || 'ሌሊት 9:00 - 9:30'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">አድሮ መውጫ፡</span>
+                      <span className="text-amber-300 font-bold">{duty.exitTimeWindow || 'ጠዋት 2:00'}</span>
                     </div>
                     <div className="flex justify-between pt-1 border-t border-slate-700">
                       <span className="text-slate-400">የገባበት ሰዓት፡</span>
@@ -768,17 +776,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">የወጣበት ሰዓት፡</span>
+                      <span className="text-slate-400">የሌሊት 9:00-9:30 ቁጥጥር፡</span>
+                      <span className="text-purple-400 font-mono font-semibold">
+                        {duty.nightCheckedTime || 'ገና አልተመዘገበም'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">አድሮ የወጣበት፡</span>
                       <span className="text-emerald-400 font-mono font-semibold">
                         {duty.checkedOutTime || 'ገና አልወጣም'}
                       </span>
                     </div>
                   </div>
 
-                  {duty.incidentReport && (
-                    <div className="p-2.5 bg-slate-900 rounded-lg border border-slate-700/60 text-[11px] text-slate-300">
-                      <div className="text-indigo-400 font-semibold mb-1">የተመዘገበ የእለት ክስተት ሪፖርት፡</div>
-                      <p className="italic">"{duty.incidentReport}"</p>
+                  {duty.incidentReport ? (
+                    <div className="p-2.5 bg-slate-900 rounded-lg border border-emerald-500/30 text-[11px] text-slate-300">
+                      <div className="text-emerald-400 font-bold flex items-center gap-1 mb-1">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        የተረኛ ማጠቃለያ ሪፖርት (ግዴታ የተጻፈ)፡
+                      </div>
+                      <p className="italic text-slate-200">"{duty.incidentReport}"</p>
+                    </div>
+                  ) : (
+                    <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20 text-[10px] text-amber-300">
+                      ⚠️ ሪፖርት ገና አልተጻፈም (ተረኛው ሪፖርት ሳይጽፍ አድሮ መውጣት አይችልም)
                     </div>
                   )}
                 </div>
@@ -1546,10 +1567,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    የመግቢያ ሰዓት ገደብ
+                    የመግቢያ ሰዓት (ውሎና አዳር)
                   </label>
                   <input
                     type="text"
@@ -1557,14 +1578,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     onChange={(e) =>
                       setNightDutyFormData({ ...nightDutyFormData, entryTimeWindow: e.target.value })
                     }
-                    placeholder="ምሽት 12:00 - 12:30"
+                    placeholder="ጠዋት 2:00 - 2:30"
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    የመውጫ ሰዓት ገደብ
+                    የሌሊት ቁጥጥር ሰዓት
+                  </label>
+                  <input
+                    type="text"
+                    value={nightDutyFormData.nightCheckTimeWindow || 'ሌሊት 9:00 - 9:30'}
+                    onChange={(e) =>
+                      setNightDutyFormData({ ...nightDutyFormData, nightCheckTimeWindow: e.target.value })
+                    }
+                    placeholder="ሌሊት 9:00 - 9:30"
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    አድሮ መውጫ ሰዓት
                   </label>
                   <input
                     type="text"
@@ -1572,7 +1608,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     onChange={(e) =>
                       setNightDutyFormData({ ...nightDutyFormData, exitTimeWindow: e.target.value })
                     }
-                    placeholder="ጠዋት 12:00 - 12:30"
+                    placeholder="ጠዋት 2:00"
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white"
                   />
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Clock, MapPin, LogOut, User as UserIcon, Calendar, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Shield, Clock, MapPin, LogOut, User as UserIcon, Calendar, CheckCircle, AlertCircle, ArrowLeft, BookOpen } from 'lucide-react';
 import { User, CommissionSettings } from '../types';
 import { toEthiopianDate, toEthiopianTime, getSlotStatus } from '../lib/ethiopianCalendar';
 
@@ -8,6 +8,7 @@ interface HeaderProps {
   settings: CommissionSettings;
   onLogout: () => void;
   onBack?: () => void;
+  onOpenDocumentation?: () => void;
   geofenceStatus: {
     withinFence: boolean;
     distanceMeters: number;
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   settings,
   onLogout,
   onBack,
+  onOpenDocumentation,
   geofenceStatus
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -125,8 +127,21 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right: GPS Location Status & User Profile */}
-          <div className="flex items-center gap-3">
+          {/* Right: GPS Location Status, Documentation Button & User Profile */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Documentation / Manual Button */}
+            {onOpenDocumentation && (
+              <button
+                id="btn-header-manual"
+                onClick={onOpenDocumentation}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-indigo-950/70 hover:bg-indigo-900/80 active:bg-amber-500 active:text-slate-950 text-indigo-200 hover:text-white border border-indigo-700/60 rounded-xl text-xs font-semibold transition cursor-pointer shadow-sm"
+                title="የሲስተም አጠቃቀም ሙሉ መመሪያ ሰነድ (User Manual)"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                <span className="hidden sm:inline">የሲስተም መመሪያ</span>
+              </button>
+            )}
+
             {/* Geofence Status Badge */}
             <div
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-emerald-950/60 text-emerald-300 border-emerald-800"

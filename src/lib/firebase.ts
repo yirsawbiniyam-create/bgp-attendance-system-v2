@@ -165,6 +165,27 @@ export const INITIAL_USERS: User[] = [
   }
 ];
 
+export const INITIAL_NIGHT_DUTIES: NightDutyShift[] = [
+  {
+    id: 'nd_duty_seed_01',
+    userId: 'usr_officer_01',
+    officerName: 'ኢንስፔክተር አለሙ በቀለ',
+    rank: 'ኢንስፔክተር (Inspector)',
+    department: 'የቴክኖሎጂ ማስፋፊያ ክፍል',
+    shiftDate: new Date().toISOString().split('T')[0],
+    ethiopianDate: 'የዛሬ እለት',
+    shiftType: '24hr_duty',
+    entryTimeWindow: 'ጠዋት 2:00 - 2:30',
+    nightCheckTimeWindow: 'ሌሊት 9:00 - 9:30',
+    exitTimeWindow: 'ጠዋት 2:00',
+    status: 'active',
+    incidentReport: '',
+    patrolNotes: '',
+    handoverNotes: '',
+    createdAt: new Date().toISOString()
+  }
+];
+
 // Helper to interact with Firestore with fallback to LocalStorage
 export class StorageService {
   private static USERS_KEY = 'bg_police_users';
@@ -341,10 +362,11 @@ export class StorageService {
     const local = localStorage.getItem(this.NIGHT_DUTY_KEY);
     if (local) {
       try {
-        return JSON.parse(local);
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch {}
     }
-    return [];
+    return INITIAL_NIGHT_DUTIES;
   }
 
   static async saveNightDuty(duty: NightDutyShift): Promise<void> {
