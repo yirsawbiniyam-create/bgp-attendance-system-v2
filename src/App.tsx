@@ -53,6 +53,7 @@ export default function App() {
       try {
         await testFirebaseConnection();
         const loadedSettings = await StorageService.getSettings();
+        loadedSettings.enforceGeofence = false; // ኪሎሜትር ተነስቷል
         setSettings(loadedSettings);
 
         const loadedUsers = await StorageService.getUsers();

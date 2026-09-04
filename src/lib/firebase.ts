@@ -92,9 +92,9 @@ export const DEFAULT_SETTINGS: CommissionSettings = {
   hqLatitude: 10.0658,
   hqLongitude: 34.5385,
   allowedRadiusMeters: 500,
-  enforceGeofence: true,
+  enforceGeofence: false, // ኪሎሜትር / የርቀት ገደብ ተዘግቷል (Disabled per user directive)
   enforceDesktopOnly: true,
-  timeSimulationEnabled: false
+  timeSimulationEnabled: true // ፈጣን ሙከራ እንዲሰራ ተፈቅዷል
 };
 
 // Seed default Admin and Police Officers
@@ -180,6 +180,7 @@ export class StorageService {
       const snap = await getDoc(doc(db, 'settings', 'main_settings'));
       if (snap.exists()) {
         const data = snap.data() as CommissionSettings;
+        data.enforceGeofence = false; // ኪሎሜትር / የርቀት ገደብ ተነስቷል
         localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(data));
         return data;
       }
@@ -189,7 +190,9 @@ export class StorageService {
     const local = localStorage.getItem(this.SETTINGS_KEY);
     if (local) {
       try {
-        return JSON.parse(local);
+        const parsed = JSON.parse(local);
+        parsed.enforceGeofence = false;
+        return parsed;
       } catch {}
     }
     return DEFAULT_SETTINGS;

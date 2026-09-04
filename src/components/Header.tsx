@@ -129,21 +129,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-3">
             {/* Geofence Status Badge */}
             <div
-              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border ${
-                geofenceStatus.withinFence
-                  ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800'
-                  : 'bg-red-950/60 text-red-300 border-red-800'
-              }`}
-              title={`የኮሚሽኑ ክልል 500 ሜትር ራዲየስ፡ ${geofenceStatus.distanceMeters} ሜትር ርቀት`}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border bg-emerald-950/60 text-emerald-300 border-emerald-800"
+              title="የኪሎሜትር እና የርቀት ገደብ ተነስቷል፤ ሲስተሙ በየትኛውም ቦታ ክፍት ነው"
             >
-              <MapPin className={`w-3.5 h-3.5 ${geofenceStatus.withinFence ? 'text-emerald-400' : 'text-red-400'}`} />
-              <span>
-                {geofenceStatus.withinFence ? (
-                  <>ኮሚሽን ግቢ ዉስጥ ({geofenceStatus.distanceMeters}m)</>
-                ) : (
-                  <>ከግቢ ውጪ ({geofenceStatus.distanceMeters}m)</>
-                )}
-              </span>
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <span>የኪሎሜትር ገደብ፡ ክፍት ነው</span>
             </div>
 
             {/* User Profile Card */}

@@ -52,13 +52,14 @@ export async function verifyGeofence(
   allowedRadius: number = DEFAULT_ALLOWED_RADIUS_METERS
 ): Promise<GeofenceResult> {
   return new Promise((resolve) => {
+    // Kilometer restriction disabled by request - default to within fence always
     if (!navigator.geolocation) {
       resolve({
         latitude: hqLat,
         longitude: hqLon,
         distanceMeters: 0,
         withinFence: true,
-        error: 'የጂኦግራፊያዊ መገኛ (GPS) በብራውዘሩ አይደገፍም፤ ነባሪ ፍቃድ ተሰጥቷል'
+        error: 'የኪሎሜትር ገደብ ተነስቷል፤ ሲስተሙ በየትኛውም ቦታ ክፍት ነው'
       });
       return;
     }
@@ -72,24 +73,23 @@ export async function verifyGeofence(
           latitude: userLat,
           longitude: userLon,
           distanceMeters: dist,
-          withinFence: dist <= allowedRadius,
+          withinFence: true, // Always true so kilometer distance never blocks
           accuracyMeters: pos.coords.accuracy
         });
       },
       (err) => {
-        // Fallback for sandboxes or when GPS prompt is cancelled/blocked in preview
         resolve({
           latitude: hqLat,
           longitude: hqLon,
-          distanceMeters: 25,
+          distanceMeters: 0,
           withinFence: true,
-          error: `የአካባቢ መረጃ ፍቃድ አልተገኘም (${err.message})፤ በኮሚሽኑ ቅጥር ግቢ ውስጥ ተገምቷል`
+          error: 'የኪሎሜትር ገደብ ተነስቷል፤ ሲስተሙ ክፍት ነው'
         });
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 30000
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 60000
       }
     );
   });

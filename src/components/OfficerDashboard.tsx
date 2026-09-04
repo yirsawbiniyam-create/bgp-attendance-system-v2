@@ -87,12 +87,9 @@ export const OfficerDashboard: React.FC<OfficerDashboardProps> = ({
     setSuccessMessage('');
     setErrorMessage('');
 
-    // Check Geofence constraint if enforced
+    // Geofence / kilometer restriction removed by request so attendance works everywhere
     if (settings.enforceGeofence && !geofenceStatus.withinFence) {
-      setErrorMessage(
-        `ከኮሚሽኑ ቅጥር ግቢ 500 ሜትር ራዲየስ ውጪ ስለሆኑ (${geofenceStatus.distanceMeters}m ርቀት) መመዝገብ አይችሉም!`
-      );
-      return;
+      // Intentionally bypassed per user request to remove kilometer restriction
     }
 
     const slot = OFFICIAL_SLOTS.find((s) => s.id === slotId);
@@ -275,8 +272,9 @@ export const OfficerDashboard: React.FC<OfficerDashboardProps> = ({
             <span className="text-slate-300">
               ቦታ፡ <strong>ቤንሻንጉል ጉሙዝ ክልል ፖሊስ ኮሚሽን (አሶሳ)</strong>
             </span>
-            <span className="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-slate-400 border border-slate-700">
-              ርቀት፡ {geofenceStatus.distanceMeters}m / 500m
+            <span className="px-2 py-0.5 rounded bg-emerald-950/60 text-[11px] text-emerald-300 border border-emerald-800 flex items-center gap-1 font-medium">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              የኪሎሜትር ገደብ፡ ተነስቷል (ክፍት ነው)
             </span>
           </div>
         </div>
